@@ -61,6 +61,25 @@ namespace OneBeyondApi.DataAccess
 
                 if (book != null)
                 {
+                    // Check if the book is overdue and apply a fine if necessary
+                    if (book.LoanEndDate.HasValue && book.LoanEndDate < DateTime.Now) 
+                    {
+                        //find out the fine amount
+                        decimal fineAmount = CalculateFine(book.LoanEndDate.Value, DateTime.Now);
+
+                        // if the fine is greater than 0 we apply the fine
+                        if(fineAmount > 0) 
+                        {
+                            var fine = new Fine
+                            {
+                                BorrowerId = book.OnLoanTo.Id,
+                                BookStockID = book.Id,
+                                DateIssued = DateTime.Now,
+                                Amount = CalculateFine(book.LoanEndDate.Value, DateTime.Now),
+                            };
+                            context.Fines.Add(fine);
+                        }
+                    }
                     book.OnLoanTo = null;
                     book.LoanEndDate = null;
                     context.SaveChanges();
@@ -69,7 +88,6 @@ namespace OneBeyondApi.DataAccess
                 return book;
             }
         }
-
 
         public List<BookStock> SearchCatalogue(CatalogueSearch search)
         {
@@ -94,5 +112,22 @@ namespace OneBeyondApi.DataAccess
                 return list.ToList();
             }
         }
+        /* After looking around on how most libarys operate i have created a method to calculate the fine based on the number of days it is overdue
+         * based on what i could find on library's policies they charge a fixed ammount per day then cap it at a maximum amount
+         */
+        private decimal CalculateFine(DateTime loanEndDate, DateTime returnDate)
+        {
+            // Find out how many days late the book is
+            int daysLate = (returnDate - loanEndDate).Days;
+
+            if (daysLate <= 0)
+            {
+                return 0; 
+            }
+
+            decimal fine = daysLate * 0.50m; // £0.50 per day
+            return fine > 5.00m ? 5.00m : fine; // Cap the fine at £5.00
+        }
+
     }
 }

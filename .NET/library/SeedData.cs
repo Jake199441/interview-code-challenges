@@ -59,7 +59,7 @@ namespace OneBeyondApi
             var bookOnLoanUntilToday = new BookStock {
                 Book = clayBook,
                 OnLoanTo = daveSmith,
-                LoanEndDate = DateTime.Now.Date
+                LoanEndDate = DateTime.Now.Date.AddDays(-3)
             };
 
             var bookNotOnLoan = new BookStock
