@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using OneBeyondApi.Model;
+using System.Net;
 
 namespace OneBeyondApi.DataAccess
 {
@@ -47,6 +48,28 @@ namespace OneBeyondApi.DataAccess
                 return query.ToList();
             }
         }
+
+        public BookStock? ReturnBook(Guid bookId)
+        {
+            using (var context = new LibraryContext())
+            {
+                var book = context.Catalogue
+                    .Include(x => x.Book)
+                     .ThenInclude(x => x.Author)
+                    .Include(x => x.OnLoanTo)
+                    .FirstOrDefault(b => b.Book.Id == bookId && b.OnLoanTo != null);
+
+                if (book != null)
+                {
+                    book.OnLoanTo = null;
+                    book.LoanEndDate = null;
+                    context.SaveChanges();
+                }
+
+                return book;
+            }
+        }
+
 
         public List<BookStock> SearchCatalogue(CatalogueSearch search)
         {

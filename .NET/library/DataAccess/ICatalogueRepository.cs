@@ -8,6 +8,8 @@ namespace OneBeyondApi.DataAccess
 
         public List<BookStock> GetOnLoanBooks(string? borrowerName = null, string? bookTitle = null);
 
+        public BookStock ReturnBook(Guid bookID);
+
         public List<BookStock> SearchCatalogue(CatalogueSearch search);
     }
 }

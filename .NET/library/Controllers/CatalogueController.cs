@@ -41,5 +41,23 @@ namespace OneBeyondApi.Controllers
         {
             return _catalogueRepository.GetOnLoanBooks(borrowerName, bookTitle);
         }
+
+        [HttpPut]
+        [SwaggerOperation(Summary = "Return a book on loan", Description = "Marks a book as returned based on the bookID")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(string), 404)]
+        [Route("OnLoan/Return")]
+        public IActionResult ReturnBook([FromQuery] Guid bookID)
+        {
+            var book = _catalogueRepository.ReturnBook(bookID);
+
+            if (book == null)
+            {
+                return NotFound("No book found with this ID or it was not on loan.");
+            }
+
+            return Ok("Book Returned");
+        }
+
     }
 }
