@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using OneBeyondApi.Model;
 
 namespace OneBeyondApi.DataAccess
@@ -18,6 +19,32 @@ namespace OneBeyondApi.DataAccess
                     .Include(x => x.OnLoanTo)
                     .ToList();
                 return list;
+            }
+        }
+
+        public List<BookStock> GetOnLoanBooks(string? borrowerName = null, string? bookTitle = null) 
+        {
+            using (var context = new LibraryContext())
+            {
+                //Allow the user to get all books on loan or filter by the book title/borrowers name
+                var query = context.Catalogue
+                    .Include(x => x.Book)
+                        .ThenInclude(x => x.Author)
+                        .Include(x => x.OnLoanTo)
+                        .Where(x => x.OnLoanTo != null)
+                        .AsQueryable();
+
+                if (!string.IsNullOrEmpty(borrowerName)) 
+                {
+                    query = query.Where(b => b.OnLoanTo.Name.Contains(borrowerName));
+                }
+
+                if (!string.IsNullOrEmpty(bookTitle))
+                {
+                    query = query.Where(b => b.Book.Name.Contains(bookTitle));
+                }
+
+                return query.ToList();
             }
         }
 
