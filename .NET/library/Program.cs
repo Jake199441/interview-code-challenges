@@ -8,7 +8,9 @@ builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IBorrowerRepository, BorrowerRepository>();
 builder.Services.AddScoped<ICatalogueRepository, CatalogueRepository>();
+// new services
 builder.Services.AddScoped<IFineRepository, FineRepository>();
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 
 
 // Seed test data into memory DB

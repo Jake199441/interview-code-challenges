@@ -16,5 +16,8 @@ namespace OneBeyondApi.DataAccess
 
         //Added DBSet for fines
         public DbSet<Fine> Fines { get; set; }
+
+        //Added DBSet for Reservations
+        public DbSet<Reservation> Reservations { get; set; }
     }
 }
